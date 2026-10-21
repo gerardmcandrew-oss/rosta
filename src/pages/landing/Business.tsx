@@ -164,7 +164,7 @@ export function BehindTheBuild() {
     {
       icon: ExternalLink,
       title: 'Competitor research',
-      body: `Reviewed the public pages of Deputy and Connecteam, linked above and checked on ${SOURCES_CHECKED}. Both already cover qualified shift replacement with optional approval, so Rosta's angle is simplicity for one segment.`,
+      body: `Reviewed the public pages of Deputy and Connecteam, linked in the footer and checked on ${SOURCES_CHECKED}. Both already cover qualified shift replacement with optional approval, so Rosta's angle is simplicity for one segment.`,
     },
     {
       icon: Target,

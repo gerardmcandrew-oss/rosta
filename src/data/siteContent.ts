@@ -127,7 +127,7 @@ export const TEST_SESSIONS: TestSession[] = [
   },
   {
     title: 'Builder testing on iPhone 16',
-    testerType: 'Builder testing by Gerard, who built Rosta. Not independent or external user testing.',
+    testerType: 'Builder testing by the person who built Rosta. Not independent or external user testing.',
     device: 'iPhone 16, in Safari and in Google Chrome.',
     tasks: [
       'Loading and portrait layout',
@@ -153,7 +153,7 @@ export const TEST_SESSIONS: TestSession[] = [
   },
   {
     title: 'Post-fix user testing',
-    testerType: 'A family member who was not involved in building Rosta. They were present when the original idea came up.',
+    testerType: 'A family member of the builder who was not involved in building Rosta. They were present when the original idea came up.',
     device: 'iPhone 17. Browser not recorded.',
     tasks:
       'Using the demo after the fixes, they submitted a shift-cover request, switched to the colleague receiving it and accepted, then switched to the manager and approved it.',
@@ -164,7 +164,7 @@ export const TEST_SESSIONS: TestSession[] = [
       title: 'QR-code tipping: future suggestion, not assessed',
       body: 'The tester remembered the QR-code tipping system used in the pub where the idea for Rosta first came up. It allowed customers to leave a tip using Apple Pay, with tips distributed to staff weekly. They suggested exploring something similar as a future addition to Rosta. It is not part of the demo, has not been assessed and is not planned or promised. Rosta has no payment features.',
     },
-    date: 'Date not recorded.',
+    date: '28 October 2026',
   },
 ]
 

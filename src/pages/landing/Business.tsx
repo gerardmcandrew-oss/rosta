@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, Compass, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Calculator, Check, ClipboardList, Compass, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
 import { useId, useState, type FormEvent } from 'react'
 import { Logo } from '../../components/Logo'
 import { COMPETITORS, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_CHANGES, TEST_SESSIONS, type TestSession } from '../../data/siteContent'
@@ -226,6 +226,32 @@ export function BehindTheBuild() {
           ))}
         </div>
 
+        <article className="mt-4 rounded-2xl border border-line bg-paper p-6" data-testid="pricing-rationale">
+          <h3 className="flex items-center gap-2 font-bold">
+            <Calculator className="size-5 text-navy" aria-hidden="true" /> Pricing rationale
+          </h3>
+          <div className="mt-2 max-w-3xl space-y-3 leading-relaxed text-muted">
+            <p>
+              €19 per café per month is an initial pricing hypothesis for the Team plan. A flat monthly fee keeps the cost predictable for an owner and
+              avoids a separate charge every time someone joins the team. For five staff it works out at €3.80 per employee per month, falling to €0.76 at
+              the 25-person limit.
+            </p>
+            <p>
+              The commercial assumption is that reducing the time spent chasing cover, checking training and updating rotas could justify a modest monthly
+              cost. For illustration, if a manager's time is valued at €20 per hour, saving roughly one hour a month would cover the subscription. This is a
+              break-even example, not a measured saving.
+            </p>
+            <p>
+              The free Starter plan offers a way to try basic induction tracking and the rota. The paid Team plan adds cover requests, approvals and
+              training-based eligibility, giving cafés a reason to upgrade when those tasks become a recurring problem.
+            </p>
+            <p>
+              The price has not been validated with café owners. Customer interviews, willingness-to-pay tests and estimates of hosting, support and payment
+              costs would be needed before deciding whether €19 is both attractive to customers and commercially sustainable.
+            </p>
+          </div>
+        </article>
+
         <div className="mt-6 grid gap-4 md:grid-cols-2">
           <figure className="flex flex-col rounded-2xl border border-line bg-paper p-3 sm:flex-row sm:items-center sm:gap-2">
             <img src={asset('images/illustrations/readiness.svg')} alt="" width={320} height={200} loading="lazy" className="h-auto w-full rounded-xl sm:w-56 sm:shrink-0" />
@@ -261,8 +287,9 @@ export function BehindTheBuild() {
             <FlaskConical className="size-5" aria-hidden="true" /> Testing evidence
           </h3>
           <p className="mt-2 max-w-3xl text-muted" data-testid="testing-status">
-            Testing included AI-assisted desktop checks, Gerard's own iPhone testing, and a post-fix walkthrough by a family member who was not involved in
-            building the demo. This provided feedback from another user, although it was not independent customer validation.
+            Testing included AI-assisted desktop checks, the builder's own testing on an iPhone 16, and a post-fix walkthrough on an iPhone 17 by a family
+            member who was not involved in building the demo. This provided feedback from another user, although it was not independent customer
+            validation.
           </p>
           <div className="mt-4 space-y-4">
             {TEST_SESSIONS.map((s, i) => (

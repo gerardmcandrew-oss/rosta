@@ -41,7 +41,7 @@ The first run found a real defect: at 320 px the request filter tabs overflowed 
 
 ## External user testing
 
-The assignment needs testing by at least one person who did not build Rosta. **No independent testing has happened yet.** The landing page's "Testing evidence" section records the testing so far: AI-assisted testing in a cloud desktop Chrome browser, and builder testing by Gerard on an iPhone 16 (Safari and Chrome). Both found three issues. They were fixed and, on 28 October 2026, retested successfully in desktop cloud Chrome and on an iPhone 16 in Safari and Google Chrome. The post-fix retest covered those three scenarios only. After the fixes, a family member who was not involved in building Rosta walked through the replacement workflow on an iPhone 17 (browser and date not recorded) and reported no problems. That is feedback from another user, not independent customer validation.
+The assignment needs testing by at least one person who did not build Rosta. **No independent testing has happened yet.** The landing page's "Testing evidence" section records the testing so far: AI-assisted testing in a cloud desktop Chrome browser, and the builder's own testing on an iPhone 16 (Safari and Chrome). Both found three issues. They were fixed and, on 28 October 2026, retested successfully in desktop cloud Chrome and on an iPhone 16 in Safari and Google Chrome. The post-fix retest covered those three scenarios only. After the fixes, on 28 October 2026 a family member of the builder, who was not involved in building Rosta, walked through the replacement workflow on an iPhone 17 (browser not recorded) and reported no problems. That is feedback from another user, not independent customer validation.
 
 ### Test script
 

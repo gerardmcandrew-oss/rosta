@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Check, ClipboardList, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Check, ClipboardList, Compass, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
 import { useId, useState, type FormEvent } from 'react'
 import { Logo } from '../../components/Logo'
 import { COMPETITORS, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_CHANGES, TEST_SESSIONS, type TestSession } from '../../data/siteContent'
@@ -197,7 +197,24 @@ export function BehindTheBuild() {
           Rosta is a college project. Here is what it is based on, what it assumes, and what it does not do yet.
         </SectionIntro>
 
-        <div className="mt-12 grid gap-4 md:grid-cols-2">
+        <article className="mt-12 rounded-2xl border border-line bg-paper p-6" data-testid="change-of-direction">
+          <h3 className="flex items-center gap-2 font-bold">
+            <Compass className="size-5 text-navy" aria-hidden="true" /> Why I changed direction
+          </h3>
+          <div className="mt-2 max-w-3xl space-y-3 leading-relaxed text-muted">
+            <p>
+              I originally had a different product idea. Then, one night in my local bar, where I worked around 25 years ago, I overheard staff arranging a
+              shift swap. They were still using printed rosters, just as we had back then. The conversation was familiar too: someone agreed to cover, the
+              boss needed to approve it, and an updated roster had to be printed.
+            </p>
+            <p>
+              That made me change direction. Rosta grew from a problem I recognised first-hand: the conversation could happen quickly, but getting the
+              change approved and reflected on the roster still took extra steps. I chose independent cafés as the initial niche to explore that problem.
+            </p>
+          </div>
+        </article>
+
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
           {notes.map((n) => (
             <article key={n.title} className="rounded-2xl border border-line bg-paper p-6">
               <h3 className="flex items-center gap-2 font-bold">

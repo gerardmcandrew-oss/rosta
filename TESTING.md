@@ -29,7 +29,7 @@
 - Malformed stored data shows a notice and loads the sample week.
 - Week navigation and "Return to sample week" work.
 - The early-access form validates locally and makes no network requests.
-- Honesty labels are present, including the Testing evidence note that neither source is independent user testing.
+- Honesty labels are present, including the Testing evidence note that none of the testing is independent customer validation.
 - No image fails to load.
 - No horizontal scrolling at 320, 375, 390, 393, 430, 768, 1024 and 1440 px on the landing page and four demo views.
 
@@ -41,7 +41,7 @@ The first run found a real defect: at 320 px the request filter tabs overflowed 
 
 ## External user testing
 
-The assignment needs testing by at least one person who did not build Rosta. **No independent testing has happened yet.** The landing page's "Testing evidence" section records the testing so far: AI-assisted testing in a cloud desktop Chrome browser, and builder testing by Gerard on an iPhone 16 (Safari and Chrome). Both found three issues. They were fixed and, on 28 October 2026, retested successfully in desktop cloud Chrome and on an iPhone 16 in Safari and Google Chrome. The post-fix retest covered those three scenarios only.
+The assignment needs testing by at least one person who did not build Rosta. **No independent testing has happened yet.** The landing page's "Testing evidence" section records the testing so far: AI-assisted testing in a cloud desktop Chrome browser, and builder testing by Gerard on an iPhone 16 (Safari and Chrome). Both found three issues. They were fixed and, on 28 October 2026, retested successfully in desktop cloud Chrome and on an iPhone 16 in Safari and Google Chrome. The post-fix retest covered those three scenarios only. After the fixes, a family member who was not involved in building Rosta walked through the replacement workflow on an iPhone 17 (browser and date not recorded) and reported no problems. That is feedback from another user, not independent customer validation.
 
 ### Test script
 
@@ -97,4 +97,4 @@ export const TEST_SESSIONS: TestSession[] = [
 ]
 ```
 
-Each entry appears as a card in the "Testing evidence" section on the landing page. Fixes go in `TEST_CHANGES`, keeping the original result, the change, what was verified and the retest separate. Record only what actually happened, and never label builder or AI-assisted testing as independent.
+Each entry appears as a card in the "Testing evidence" section on the landing page. Fixes go in `TEST_CHANGES`, keeping the original result, the change, what was verified and the retest separate. Record only what actually happened, and never label builder, AI-assisted or family-member testing as independent customer validation.

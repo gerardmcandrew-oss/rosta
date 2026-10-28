@@ -139,12 +139,13 @@ export function Pricing() {
   )
 }
 
-const TEST_FIELDS: { key: Exclude<keyof TestSession, 'title'>; label: string }[] = [
+const TEST_FIELDS: { key: Exclude<keyof TestSession, 'title' | 'suggestion'>; label: string }[] = [
   { key: 'testerType', label: 'Tester type' },
   { key: 'device', label: 'Device and browser' },
   { key: 'tasks', label: 'Tasks attempted' },
   { key: 'worked', label: 'What worked' },
   { key: 'problems', label: 'What broke or caused confusion' },
+  { key: 'changes', label: 'Changes made' },
   { key: 'date', label: 'Test date' },
 ]
 
@@ -260,8 +261,8 @@ export function BehindTheBuild() {
             <FlaskConical className="size-5" aria-hidden="true" /> Testing evidence
           </h3>
           <p className="mt-2 max-w-3xl text-muted" data-testid="testing-status">
-            Two sources so far: AI-assisted testing in a desktop browser, and Gerard's own testing on an iPhone. Neither is independent user testing,
-            and no customers have tested Rosta.
+            Testing included AI-assisted desktop checks, Gerard's own iPhone testing, and a post-fix walkthrough by a family member who was not involved in
+            building the demo. This provided feedback from another user, although it was not independent customer validation.
           </p>
           <div className="mt-4 space-y-4">
             {TEST_SESSIONS.map((s, i) => (
@@ -270,21 +271,31 @@ export function BehindTheBuild() {
                   {i + 1}. {s.title}
                 </h4>
                 <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-[12rem_1fr]">
-                  {TEST_FIELDS.map((f) => (
-                    <div key={f.key} className="contents">
-                      <dt className="text-sm font-semibold text-muted">{f.label}</dt>
-                      <dd>
-                        <FieldValue value={s[f.key]} />
-                      </dd>
-                    </div>
-                  ))}
+                  {TEST_FIELDS.map((f) => {
+                    const value = s[f.key]
+                    if (value === undefined) return null
+                    return (
+                      <div key={f.key} className="contents">
+                        <dt className="text-sm font-semibold text-muted">{f.label}</dt>
+                        <dd>
+                          <FieldValue value={value} />
+                          {f.key === 'changes' && s.suggestion && (
+                            <div className="mt-3 rounded-xl border border-dashed border-paper-300 bg-paper p-4" data-testid="future-suggestion">
+                              <p className="text-sm font-semibold">{s.suggestion.title}</p>
+                              <p className="mt-1 text-sm text-muted">{s.suggestion.body}</p>
+                            </div>
+                          )}
+                        </dd>
+                      </div>
+                    )
+                  })}
                 </dl>
               </article>
             ))}
             <article className="card p-6" data-testid="test-changes">
               <h4 className="font-bold">Changes made</h4>
               <p className="mt-1 text-sm text-muted">
-                Fixes for the three issues both sources found. The post-fix retest covered these three scenarios only; the other mobile tests were not repeated.
+                Fixes for the three issues found by testing sources 1 and 2. The post-fix retest covered these three scenarios only; the other mobile tests were not repeated.
               </p>
               <div className="mt-4 divide-y divide-line">
                 {TEST_CHANGES.map((c) => (
@@ -499,7 +510,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-7xl px-4 py-5 text-xs text-paper/50 sm:px-6 lg:px-8">
-          College prototype. Harbour Lane Café and its staff are fictional. Testing evidence covers AI-assisted desktop checks and builder testing only. No customer validation or real sign-ups are claimed.
+          College prototype. Harbour Lane Café and its staff are fictional. Testing evidence covers AI-assisted desktop checks, builder testing and a family-member walkthrough. It does not establish customer demand, and no customer validation or real sign-ups are claimed.
         </p>
       </div>
     </footer>

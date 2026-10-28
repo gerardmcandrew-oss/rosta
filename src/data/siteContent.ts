@@ -87,8 +87,8 @@ export const COMPETITORS = [
 
 /**
  * Testing evidence for Behind the build. Record only what actually
- * happened. Builder and AI-assisted testing are not independent user
- * testing, so never label them that way.
+ * happened. Builder, AI-assisted and family-member testing are not
+ * independent customer validation, so never label them that way.
  */
 export interface TestSession {
   title: string
@@ -97,6 +97,10 @@ export interface TestSession {
   tasks: string | string[]
   worked: string | string[]
   problems: string | string[]
+  /** Only for sessions whose changes are not covered by TEST_CHANGES. */
+  changes?: string
+  /** An idea raised by the tester that has not been assessed or built. */
+  suggestion?: { title: string; body: string }
   date: string
 }
 
@@ -118,7 +122,7 @@ export const TEST_SESSIONS: TestSession[] = [
       "Confirming and undoing till training updated Aoife's till readiness.",
       'No obvious overlap or misaligned columns on the dashboard or rota.',
     ],
-    problems: 'All three issues listed under Changes made below.',
+    problems: 'All three issues listed in the Changes made card below.',
     date: CONFIRMED,
   },
   {
@@ -146,6 +150,21 @@ export const TEST_SESSIONS: TestSession[] = [
     worked: 'Results for each scenario were not written up here. Screenshots were taken during testing.',
     problems: 'The same three issues as the desktop testing, in both Safari and Chrome.',
     date: CONFIRMED,
+  },
+  {
+    title: 'Post-fix user testing',
+    testerType: 'A family member who was not involved in building Rosta. They were present when the original idea came up.',
+    device: 'iPhone 17. Browser not recorded.',
+    tasks:
+      'Using the demo after the fixes, they submitted a shift-cover request, switched to the colleague receiving it and accepted, then switched to the manager and approved it.',
+    worked: 'They completed the request, acceptance and manager-approval workflow and described the demo as very intuitive.',
+    problems: 'No problems were reported during this walkthrough. This was a limited test of the replacement workflow, not a full test of every feature.',
+    changes: 'No further changes were made from this walkthrough. One suggestion was recorded for a possible later iteration: QR-code tipping.',
+    suggestion: {
+      title: 'QR-code tipping: future suggestion, not assessed',
+      body: 'The tester remembered the QR-code tipping system used in the pub where the idea for Rosta first came up. It allowed customers to leave a tip using Apple Pay, with tips distributed to staff weekly. They suggested exploring something similar as a future addition to Rosta. It is not part of the demo, has not been assessed and is not planned or promised. Rosta has no payment features.',
+    },
+    date: 'Date not recorded.',
   },
 ]
 

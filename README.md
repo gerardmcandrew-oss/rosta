@@ -11,7 +11,7 @@ The project has two parts, both static and served from GitHub Pages:
 | `/` | Landing page: problem, customer, solution, requirements, competitors, pricing assumptions, behind the build, early-access form |
 | `/demo/` | Working demo: manager and employee modes running on a fictional café, Harbour Lane Café, Dublin |
 
-Everything in the demo is **fictional business and sample data**. Prices are **illustrative assumptions**. No testimonials or customer numbers are claimed. The landing page's Testing evidence covers AI-assisted desktop testing and the builder's own iPhone testing only; neither is independent user testing.
+Everything in the demo is **fictional business and sample data**. Prices are **illustrative assumptions**. No testimonials or customer numbers are claimed. The landing page's Testing evidence covers AI-assisted desktop testing, the builder's own iPhone testing and a post-fix family-member walkthrough; none of it is independent customer validation.
 
 ## Quick start
 

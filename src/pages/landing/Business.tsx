@@ -1,4 +1,4 @@
-import { ArrowRight, ArrowUpRight, Calculator, Check, ClipboardList, Compass, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
+import { ArrowRight, ArrowUpRight, Calculator, Check, ClipboardList, Compass, ExternalLink, FlaskConical, GraduationCap, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
 import { useId, useState, type FormEvent } from 'react'
 import { Logo } from '../../components/Logo'
 import { COMPETITORS, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_CHANGES, TEST_SESSIONS, type TestSession } from '../../data/siteContent'
@@ -172,7 +172,7 @@ export function BehindTheBuild() {
     {
       icon: Lightbulb,
       title: 'Initial hypothesis',
-      body: 'If induction records and shift eligibility are connected, managers will spend less effort checking whether a replacement is suitable, and staff will be able to arrange cover without a group chat. This is a hypothesis to test, not a result.',
+      body: 'The bar observation prompted the shift-cover idea. I then considered how a manager would know whether an available replacement was trained for that particular role. This led to connecting induction tasks with shift eligibility across floor service, till, barista and supervisor work. The assumption is that checking both together could reduce the effort involved in arranging suitable cover. That still needs testing with café owners and managers.',
     },
     {
       icon: Users,
@@ -226,6 +226,31 @@ export function BehindTheBuild() {
           ))}
         </div>
 
+        <article className="mt-4 rounded-2xl border border-line bg-paper p-6" data-testid="induction-decision">
+          <h3 className="flex items-center gap-2 font-bold">
+            <GraduationCap className="size-5 text-navy" aria-hidden="true" /> Why induction is linked to the rota
+          </h3>
+          <div className="mt-2 max-w-3xl space-y-3 leading-relaxed text-muted">
+            <p>
+              A separate checklist would leave the manager cross-checking two places before approving cover, so Rosta uses the same training records to decide
+              who is listed as a replacement. An overall percentage is not enough for that. In the demo, Aoife, a new starter, has four of six induction tasks
+              done. She is ready for floor service because her customer service training is complete, but she cannot cover Thursday's till shift until a
+              manager confirms her till training.
+            </p>
+            <p>
+              Till training is practical, so a manager confirms it after practising with the employee rather than the employee ticking it off. Completing
+              induction also does not establish experience: barista and supervisor shifts need experience recorded by a manager, so finishing every task does
+              not make someone eligible for every role.
+            </p>
+            <p>
+              Testing checked these rules. Missing till training blocked Aoife from till cover, and confirming and undoing till training updated her till
+              readiness. Testing also found that final sign-off was allowed too early. It now needs every mandatory task and is removed if one is undone. That
+              fix and the other two were confirmed in desktop Chrome and in the builder's iPhone 16 testing in Safari and Chrome. This shows the rules work as
+              designed; it does not prove customer demand or validate the commercial assumptions.
+            </p>
+          </div>
+        </article>
+
         <article className="mt-4 rounded-2xl border border-line bg-paper p-6" data-testid="pricing-rationale">
           <h3 className="flex items-center gap-2 font-bold">
             <Calculator className="size-5 text-navy" aria-hidden="true" /> Pricing rationale
@@ -256,7 +281,7 @@ export function BehindTheBuild() {
           <figure className="flex flex-col rounded-2xl border border-line bg-paper p-3 sm:flex-row sm:items-center sm:gap-2">
             <img src={asset('images/illustrations/readiness.svg')} alt="" width={320} height={200} loading="lazy" className="h-auto w-full rounded-xl sm:w-56 sm:shrink-0" />
             <figcaption className="px-2 pt-3 pb-1 text-sm text-muted">
-              Training readiness is worked out skill by skill. Someone can be ready for floor service and not yet for the till.
+              Readiness is worked out shift type by shift type, from the training records.
             </figcaption>
           </figure>
           <figure className="flex flex-col rounded-2xl border border-line bg-paper p-3 sm:flex-row sm:items-center sm:gap-2">

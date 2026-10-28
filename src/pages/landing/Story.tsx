@@ -28,7 +28,7 @@ const PAINS = [
   {
     icon: ClipboardList,
     title: 'Training is on a paper checklist',
-    body: 'When a new starter offers to cover a till shift, nobody can easily check whether they have actually been trained on the till.',
+    body: 'Finding someone free is only half the job. The manager still needs to check whether they are trained for the shift, especially when a new starter offers to cover.',
   },
 ]
 
@@ -40,7 +40,8 @@ export function Problem() {
           <div>
             <SectionIntro id="problem-heading" eyebrow="The problem" title="Small teams, scattered information">
               Small café managers often juggle WhatsApp messages, spreadsheets, verbal approvals and paper checklists. That makes it hard to know who is working,
-              whether a replacement is suitable and whether a new employee is ready.
+              whether a replacement is suitable and whether a new employee is ready. This is the problem Rosta explores; it has not yet been confirmed through
+              interviews with café owners.
             </SectionIntro>
             <ul className="mt-10 space-y-6">
               {PAINS.map((p) => (

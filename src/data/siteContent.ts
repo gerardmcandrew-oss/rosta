@@ -39,14 +39,14 @@ export const REQUIREMENTS: Requirement[] = [
   {
     id: 'R5',
     need: 'Managers can track new-employee induction progress.',
-    howRosta: 'Six induction tasks per person, with progress worked out from completed records and manager sign-off.',
+    howRosta: 'Six sample induction tasks per person. Progress comes from completed records, and the final manager sign-off needs every other task done.',
     status: 'Working in demo',
     planned: 'Custom task lists for each café.',
   },
   {
     id: 'R6',
     need: 'Shift eligibility reflects relevant completed training.',
-    howRosta: 'Each shift lists the skills it needs. Till shifts need till training, floor shifts need customer service training.',
+    howRosta: 'Each shift lists the skills it needs. Till shifts need till training and floor shifts need customer service training. Barista shifts need recorded experience; supervisor shifts need till training and recorded experience.',
     status: 'Working in demo',
   },
 ]
@@ -55,12 +55,18 @@ export const LIMITATIONS: { feature: string; status: FeatureStatus; note: string
   { feature: 'Replacement requests, approvals, induction and eligibility', status: 'Working in demo', note: 'Runs on real rules against sample records.' },
   { feature: 'Direct rota assignment by a manager', status: 'Working in demo', note: 'Uses the same eligibility checks.' },
   { feature: 'Adding, editing or removing staff', status: 'Planned', note: 'The demo uses a preloaded fictional team.' },
+  { feature: 'Custom induction checklists for each café', status: 'Planned', note: 'The demo uses one sample checklist.' },
   { feature: 'Creating new shifts and rota templates', status: 'Planned', note: 'The sample week is fixed.' },
   { feature: 'Notifications by email or push', status: 'Planned', note: 'Requests appear when you switch persona.' },
   { feature: 'Two-way shift swaps', status: 'Planned', note: 'The demo supports one-way cover only.' },
   { feature: 'Real accounts and secure login', status: 'Not included', note: 'Persona switching is a demonstration feature.' },
   { feature: 'Sync between devices', status: 'Not included', note: 'Data is saved in your browser only.' },
   { feature: 'Payroll, payments and subscriptions', status: 'Not included', note: 'Prices on this page are assumptions.' },
+  {
+    feature: 'Accredited training, HR records and compliance',
+    status: 'Not included',
+    note: 'Rosta explores readiness across café roles, not a full HR or training system. Its checklist does not award qualifications or establish legal compliance.',
+  },
 ]
 
 export const SOURCES_CHECKED = '21 October 2026'

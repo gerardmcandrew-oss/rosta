@@ -60,8 +60,13 @@ const FEATURES: FeatureRow[] = [
     icon: ShieldCheck,
     eyebrow: 'Training eligibility',
     title: 'Ready for the floor is not the same as ready for the till',
-    body: 'Each shift needs specific skills. Rosta checks the actual training records, so a new starter with most of their induction done still cannot cover a till shift until till training is confirmed.',
-    points: ['Checks training, availability and clashing shifts', 'Shows every reason, in plain language', 'Updates as soon as training is confirmed'],
+    body: 'Ready for one role does not mean ready for every role. A new starter might be ready for floor service while still needing practical till training. Rosta checks the training and recorded experience required for each shift before listing eligible replacements.',
+    points: [
+      'Core induction tasks first, then the training each shift needs',
+      'Barista and supervisor shifts also need experience recorded by a manager',
+      'Availability and clashing shifts are checked separately',
+      'Every reason shown in plain language',
+    ],
     visual: (
       <div className="mx-auto max-w-md overflow-hidden rounded-[1.75rem] border border-line bg-white shadow-float">
         <Screenshot
@@ -92,8 +97,8 @@ const FEATURES: FeatureRow[] = [
     icon: GraduationCap,
     eyebrow: 'Induction tracking',
     title: 'Every new starter, one checklist',
-    body: 'Six induction tasks per person. Staff tick off the self-service ones; the manager confirms anything done in person and signs off the induction.',
-    points: ['Progress worked out from completed tasks', 'Manager-only tasks stay locked for staff', 'Internal tasks, not accredited certificates'],
+    body: 'Staff work through a sample checklist of six induction tasks, ticking off the self-service ones. A manager confirms practical till training and gives the final sign-off, which needs every other task complete. Overall induction progress and shift readiness are different. Staff may be ready for some work before their full induction is signed off.',
+    points: ['Progress worked out from completed tasks', 'Manager-only tasks stay locked for staff', 'A sample internal checklist, not an accredited qualification'],
     visual: (
       <div className="overflow-hidden rounded-[1.75rem] border border-line bg-white shadow-float">
         <Screenshot

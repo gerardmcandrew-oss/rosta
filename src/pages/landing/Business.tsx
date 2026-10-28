@@ -1,7 +1,7 @@
 import { ArrowRight, ArrowUpRight, Check, ClipboardList, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
 import { useId, useState, type FormEvent } from 'react'
 import { Logo } from '../../components/Logo'
-import { COMPETITORS, FIXES_VERIFIED_ON, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_CHANGES, TEST_SESSIONS, type TestSession } from '../../data/siteContent'
+import { COMPETITORS, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_CHANGES, TEST_SESSIONS, type TestSession } from '../../data/siteContent'
 import { asset, DEMO_URL } from '../../utils/assets'
 import { StatusBadge } from './Product'
 import { SectionIntro } from './Story'
@@ -151,8 +151,8 @@ const TEST_FIELDS: { key: Exclude<keyof TestSession, 'title'>; label: string }[]
 const CHANGE_FIELDS = [
   { key: 'original', label: 'Original result' },
   { key: 'change', label: 'Change made' },
-  { key: 'verified', label: `Checked ${FIXES_VERIFIED_ON}` },
-  { key: 'pending', label: 'Still to check' },
+  { key: 'verified', label: 'Verified' },
+  { key: 'retested', label: 'Retest' },
 ] as const
 
 function FieldValue({ value }: { value: string | string[] }) {
@@ -266,7 +266,9 @@ export function BehindTheBuild() {
             ))}
             <article className="card p-6" data-testid="test-changes">
               <h4 className="font-bold">Changes made</h4>
-              <p className="mt-1 text-sm text-muted">Fixes for the three issues both sources found.</p>
+              <p className="mt-1 text-sm text-muted">
+                Fixes for the three issues both sources found. The post-fix retest covered these three scenarios only; the other mobile tests were not repeated.
+              </p>
               <div className="mt-4 divide-y divide-line">
                 {TEST_CHANGES.map((c) => (
                   <section key={c.issue} aria-label={c.issue} className="py-4 first:pt-0 last:pb-0">
@@ -480,7 +482,7 @@ export function Footer() {
       </div>
       <div className="border-t border-white/10">
         <p className="mx-auto max-w-7xl px-4 py-5 text-xs text-paper/50 sm:px-6 lg:px-8">
-          College prototype. Harbour Lane Café and its staff are fictional. No customers, sign-ups or test results are claimed on this page.
+          College prototype. Harbour Lane Café and its staff are fictional. Testing evidence covers AI-assisted desktop checks and builder testing only. No customer validation or real sign-ups are claimed.
         </p>
       </div>
     </footer>

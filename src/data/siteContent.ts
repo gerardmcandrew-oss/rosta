@@ -100,6 +100,8 @@ export interface TestSession {
   date: string
 }
 
+const CONFIRMED = 'Testing and fixes confirmed: 28 October 2026'
+
 export const TEST_SESSIONS: TestSession[] = [
   {
     title: 'AI-assisted desktop testing',
@@ -117,7 +119,7 @@ export const TEST_SESSIONS: TestSession[] = [
       'No obvious overlap or misaligned columns on the dashboard or rota.',
     ],
     problems: 'All three issues listed under Changes made below.',
-    date: 'Date not recorded',
+    date: CONFIRMED,
   },
   {
     title: 'Builder testing on iPhone 16',
@@ -143,7 +145,7 @@ export const TEST_SESSIONS: TestSession[] = [
     ],
     worked: 'Results for each scenario were not written up here. Screenshots were taken during testing.',
     problems: 'The same three issues as the desktop testing, in both Safari and Chrome.',
-    date: 'Date not recorded',
+    date: CONFIRMED,
   },
 ]
 
@@ -153,12 +155,10 @@ export interface TestChange {
   original: string
   change: string
   verified: string
-  pending: string
+  retested: string
 }
 
-export const FIXES_VERIFIED_ON = '28 October 2026'
-
-const IPHONE_RETEST = 'Retest on an iPhone in Safari and Chrome. The iPhone tests above were done before this fix.'
+const RETESTED = 'Retested successfully on 28 October 2026 in desktop cloud Chrome and on an iPhone 16 using Safari and Google Chrome.'
 
 export const TEST_CHANGES: TestChange[] = [
   {
@@ -167,8 +167,8 @@ export const TEST_CHANGES: TestChange[] = [
     change:
       'Sign-off now needs every other induction task to be complete. Until then the button is disabled and says what is missing, and the same rule is checked when the change is saved. Undoing a task removes the sign-off and asks for a fresh one. Saved sign-offs with tasks outstanding are removed with a notice. Shift eligibility still depends only on the training each shift needs.',
     verified:
-      'Automated tests: early sign-off is blocked, it becomes available once every task is done, undoing a task removes it, and redoing the task needs a new sign-off. Floor and till eligibility are unchanged.',
-    pending: IPHONE_RETEST,
+      'Sign-off is blocked until the required training is complete. Undoing required training removes the final sign-off and a fresh sign-off is needed. Automated tests also confirm floor and till eligibility are unchanged.',
+    retested: RETESTED,
   },
   {
     issue: 'Home mixing different weeks',
@@ -176,8 +176,8 @@ export const TEST_CHANGES: TestChange[] = [
     change:
       "Home now takes the current week from the fixed demo clock, Monday 9 November 2026 at 07:00, not from the week being browsed. The count and the next-shift card use the same meaning of upcoming. When nothing is coming up, Home says so.",
     verified:
-      "Automated tests: Ciara's Home shows 5 shifts and Monday 9 November after browsing forwards and backwards, switching to Priya shows her 4, and the empty state appears for someone with no shifts.",
-    pending: IPHONE_RETEST,
+      "Browsing another week no longer makes Home's current-week count and next-shift date refer to different weeks. Automated tests also cover browsing backwards, switching persona and the empty state.",
+    retested: RETESTED,
   },
   {
     issue: 'Guided scenarios keeping the wrong week',
@@ -185,8 +185,8 @@ export const TEST_CHANGES: TestChange[] = [
     change:
       "Each Start button now switches persona, returns to the sample week and opens the scenario's screen: the cover request for the employee scenarios, and Aoife's record in Team for the manager one. Demo changes are kept. If a scenario's starting conditions have changed, it says so and offers Reset sample data.",
     verified:
-      'Automated tests: scenarios A, B and D started after browsing another week open the right week and record. Scenario C opens the same shift as B. The changed-conditions message was also checked.',
-    pending: IPHONE_RETEST,
+      'Starting a scenario now selects the required sample week and opens the relevant screen or record. Automated tests also check the message shown when starting conditions have changed.',
+    retested: RETESTED,
   },
 ]
 

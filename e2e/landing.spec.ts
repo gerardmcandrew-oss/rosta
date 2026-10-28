@@ -26,7 +26,7 @@ test('honesty labels are present', async ({ page }) => {
   await expect(page.getByText('Illustrative pricing assumptions for a college prototype. No subscriptions are available.')).toBeVisible()
   await expect(page.getByTestId('testing-status')).toContainText('Neither is independent user testing')
   await expect(page.getByText('External user testing pending.')).toHaveCount(0)
-  await expect(page.getByTestId('test-changes').getByText(/Retest on an iPhone in Safari and Chrome/)).toHaveCount(3)
+  await expect(page.getByTestId('test-changes').getByText(/Retested successfully on 28 October 2026/)).toHaveCount(3)
   await expect(page.getByText('Links and descriptions checked on 21 October 2026.').first()).toBeVisible()
 })
 

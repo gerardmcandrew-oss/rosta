@@ -70,9 +70,10 @@ export const SAMPLE_TRAINING: TrainingRecord[] = [
   ...completed('e06', ALL_TASKS, '2024-06-17'),
   ...completed('e07', ALL_TASKS, '2024-05-06'),
   ...completed('e08', ALL_TASKS, '2025-01-27'),
-  // Floor team: trained for floor service but not yet on the till.
-  ...completed('e09', [...SELF_TASKS, 'manager-sign-off'], '2025-03-24'),
-  ...completed('e10', [...SELF_TASKS, 'manager-sign-off'], '2025-06-16'),
+  // Floor team: trained for floor service but not yet on the till, so the
+  // final manager sign-off is still to come.
+  ...completed('e09', SELF_TASKS, '2025-03-24'),
+  ...completed('e10', SELF_TASKS, '2025-06-16'),
   ...completed('e11', ALL_TASKS, '2024-09-23'),
   // New starters at different stages.
   ...completed('e12', ['handbook', 'workplace-intro', 'food-safety', 'customer-service'], '2026-11-04'),

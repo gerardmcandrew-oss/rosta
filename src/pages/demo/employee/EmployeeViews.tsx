@@ -4,7 +4,7 @@ import { taskById } from '../../../data/catalogue'
 import type { Employee, Shift } from '../../../models/types'
 import { isOpenRequest } from '../../../rules/eligibility'
 import { shiftRequestBlocker } from '../../../rules/requests'
-import { hasStarted, sortShifts } from '../../../rules/scheduling'
+import { sortShifts, upcomingSummary } from '../../../rules/scheduling'
 import { inductionProgress } from '../../../rules/training'
 import { addDays, formatDay, formatShortDay } from '../../../utils/date'
 import { Button, EmptyState, ProgressBar, ProgressRing, SectionHeader } from '../../../components/ui'
@@ -16,26 +16,24 @@ import { firstName, useDemo } from '../../../demo/store'
 import type { EmployeeTab } from '../DemoApp'
 
 function useMine(employee: Employee) {
-  const { state, now } = useDemo()
+  const { state } = useDemo()
   const shifts = sortShifts(state.shifts.filter((s) => s.employeeId === employee.id))
-  const upcoming = shifts.filter((s) => !hasStarted(s, now))
   const incoming = state.requests.filter((r) => r.proposedId === employee.id && r.status === 'pending-colleague')
   const mine = state.requests.filter((r) => r.requesterId === employee.id && isOpenRequest(r))
   const history = state.requests
     .filter((r) => (r.requesterId === employee.id || r.proposedId === employee.id) && !isOpenRequest(r))
     .sort((a, b) => b.createdAt.localeCompare(a.createdAt))
   const awaitingOthers = state.requests.filter((r) => r.proposedId === employee.id && r.status === 'pending-manager')
-  return { shifts, upcoming, incoming, mine, history, awaitingOthers }
+  return { shifts, incoming, mine, history, awaitingOthers }
 }
 
 export function EmployeeHome({ employee, go, onRequest }: { employee: Employee; go: (tab: EmployeeTab) => void; onRequest: (s: Shift) => void }) {
   const { state, now } = useDemo()
-  const { upcoming, incoming, mine } = useMine(employee)
+  const { incoming, mine } = useMine(employee)
   const progress = inductionProgress(employee.id, state.training)
-  const next = upcoming[0]
+  // The current week comes from the demo clock, not the week browsed in My shifts.
+  const { next, thisWeek: weekCount } = upcomingSummary(employee.id, state.shifts, now)
   const nextSelfTask = progress.outstanding.map(taskById).find((t) => t.completedBy === 'employee')
-  const weekEnd = addDays(state.viewWeek, 6)
-  const weekCount = upcoming.filter((s) => s.date >= state.viewWeek && s.date <= weekEnd).length
 
   return (
     <div className="mx-auto max-w-2xl space-y-5">
@@ -92,7 +90,10 @@ export function EmployeeHome({ employee, go, onRequest }: { employee: Employee; 
             </div>
           </>
         ) : (
-          <p className="mt-2 text-lg text-paper/80">Nothing scheduled.</p>
+          <div data-testid="no-upcoming">
+            <p className="mt-2 text-2xl font-bold tracking-tight">No upcoming shifts</p>
+            <p className="mt-1 text-paper/80">Nothing is on the rota for you from now on. A shift appears here when a manager assigns you one.</p>
+          </div>
         )}
       </section>
 

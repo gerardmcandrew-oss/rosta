@@ -7,7 +7,9 @@ import { Logo } from '../../components/Logo'
 import { Avatar } from '../../components/ui'
 import { CoverRequestSheet } from '../../demo/components/CoverRequestSheet'
 import { ShiftDetailSheet } from '../../demo/components/ShiftDetailSheet'
+import type { Scenario } from '../../demo/scenarios'
 import { DemoProvider, useDemo } from '../../demo/store'
+import { shiftRequestBlocker } from '../../rules/requests'
 import { GuideSheet, PersonaSheet, RecoveredNotice, ResetSheet, Toasts } from './DemoChrome'
 import { EmployeeHome, EmployeeInduction, EmployeeRequests, EmployeeShifts } from './employee/EmployeeViews'
 import { ManagerOverview } from './manager/ManagerOverview'
@@ -48,12 +50,14 @@ function useHashTab(valid: Tab[], fallback: Tab): [Tab, (t: Tab) => void] {
 }
 
 function Shell() {
-  const { state, persona, actor } = useDemo()
+  const { state, persona, actor, now, setPersona, returnToSampleWeek } = useDemo()
   const [personaOpen, setPersonaOpen] = useState(false)
   const [guideOpen, setGuideOpen] = useState(false)
   const [resetOpen, setResetOpen] = useState(false)
   const [coverShift, setCoverShift] = useState<Shift | null>(null)
   const [detailShift, setDetailShift] = useState<string | null>(null)
+  /** Team record to expand and scroll to. A new object each time so repeated starts still apply. */
+  const [teamFocus, setTeamFocus] = useState<{ employeeId: string } | null>(null)
 
   const isManager = persona.mode === 'manager'
   const awaitingManager = state.requests.filter((r) => r.status === 'pending-manager').length
@@ -78,6 +82,21 @@ function Shell() {
   )
 
   const siteHref = import.meta.env.BASE_URL
+
+  /**
+   * Puts the demo where a guided scenario begins: its persona, the sample
+   * week and the screen it uses, with the shift or staff record open.
+   * Demo changes are never reset here.
+   */
+  const startScenario = (s: Scenario) => {
+    setGuideOpen(false)
+    setPersona(s.persona)
+    returnToSampleWeek()
+    go(s.tab)
+    const shift = state.shifts.find((x) => x.id === s.shiftId)
+    if (shift && s.persona.mode === 'employee' && !shiftRequestBlocker(state, shift, s.persona.employeeId, now)) setCoverShift(shift)
+    if (s.employeeId) setTeamFocus({ employeeId: s.employeeId })
+  }
 
   const PersonaButton = ({ dark = false }: { dark?: boolean }) => (
     <button
@@ -180,7 +199,7 @@ function Shell() {
                 {tab === 'overview' && <ManagerOverview go={go} onShift={setDetailShift} />}
                 {tab === 'rota' && <ManagerRota onShift={setDetailShift} />}
                 {tab === 'requests' && <ManagerRequests />}
-                {tab === 'team' && <ManagerTeam />}
+                {tab === 'team' && <ManagerTeam focus={teamFocus} />}
               </>
             ) : (
               <>
@@ -224,7 +243,15 @@ function Shell() {
       </nav>
 
       <PersonaSheet open={personaOpen} onClose={() => setPersonaOpen(false)} />
-      <GuideSheet open={guideOpen} onClose={() => setGuideOpen(false)} />
+      <GuideSheet
+        open={guideOpen}
+        onClose={() => setGuideOpen(false)}
+        onStart={startScenario}
+        onReset={() => {
+          setGuideOpen(false)
+          setResetOpen(true)
+        }}
+      />
       <ResetSheet open={resetOpen} onClose={() => setResetOpen(false)} />
       <CoverRequestSheet shift={coverShift} onClose={() => setCoverShift(null)} />
       <ShiftDetailSheet shiftId={detailShift} onClose={() => setDetailShift(null)} />

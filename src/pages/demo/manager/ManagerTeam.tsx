@@ -1,14 +1,21 @@
 import { ChevronDown } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ROLE_LABELS } from '../../../data/catalogue'
 import { inductionProgress } from '../../../rules/training'
 import { Avatar, Pill, ProgressRing, SectionHeader } from '../../../components/ui'
 import { InductionChecklist, SkillReadiness } from '../../../demo/components/Induction'
 import { useDemo } from '../../../demo/store'
 
-export function ManagerTeam() {
+export function ManagerTeam({ focus }: { focus?: { employeeId: string } | null }) {
   const { state } = useDemo()
-  const [openId, setOpenId] = useState<string | null>('e12')
+  const [openId, setOpenId] = useState<string | null>(focus?.employeeId ?? 'e12')
+
+  // A guided scenario can ask for one record to be opened and brought into view.
+  useEffect(() => {
+    if (!focus) return
+    setOpenId(focus.employeeId)
+    requestAnimationFrame(() => document.querySelector(`[data-testid="team-${focus.employeeId}"]`)?.scrollIntoView({ block: 'start', behavior: 'smooth' }))
+  }, [focus])
 
   const people = [...state.employees].sort(
     (a, b) => inductionProgress(a.id, state.training).percent - inductionProgress(b.id, state.training).percent || a.name.localeCompare(b.name),
@@ -25,7 +32,7 @@ export function ManagerTeam() {
           const p = inductionProgress(e.id, state.training)
           const open = openId === e.id
           return (
-            <li key={e.id} className="card overflow-hidden" data-testid={`team-${e.id}`}>
+            <li key={e.id} className="card scroll-mt-20 overflow-hidden" data-testid={`team-${e.id}`}>
               <button
                 type="button"
                 onClick={() => setOpenId(open ? null : e.id)}

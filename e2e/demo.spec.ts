@@ -137,3 +137,112 @@ test('week navigation and return to sample week', async ({ page }) => {
   await page.getByRole('button', { name: 'Return to sample week' }).click()
   await expect(page.getByText('9 Nov to 15 Nov 2026')).toBeVisible()
 })
+
+test('final sign-off waits for every induction task and is withdrawn if one is undone', async ({ page }) => {
+  await openDemoAs(page, { mode: 'manager' }, 'team')
+  const aoife = page.getByTestId('team-e12')
+  const signOff = aoife.getByTestId('task-manager-sign-off')
+  await expect(signOff.getByRole('button', { name: /Confirm as manager/ })).toBeDisabled()
+  await expect(signOff).toContainText('Complete till training first.')
+
+  await aoife.getByTestId('task-till-training').getByRole('button', { name: /Confirm as manager/ }).click()
+  await signOff.getByRole('button', { name: /Confirm as manager/ }).click()
+  await expect(signOff).toContainText('Confirmed by manager')
+
+  await aoife.getByTestId('task-till-training').getByRole('button', { name: /Undo/ }).click()
+  await expect(page.getByText(/Manager sign-off removed: a fresh sign-off is needed/)).toBeVisible()
+  await expect(signOff).not.toContainText('Confirmed by manager')
+  await expect(signOff.getByRole('button', { name: /Confirm as manager/ })).toBeDisabled()
+
+  // Redoing till training does not restore the old sign-off.
+  await aoife.getByTestId('task-till-training').getByRole('button', { name: /Confirm as manager/ }).click()
+  await expect(signOff.getByRole('button', { name: /Confirm as manager/ })).toBeEnabled()
+  await expect(signOff).not.toContainText('Confirmed by manager')
+})
+
+test('a saved sign-off with tasks outstanding is withdrawn with a notice', async ({ page }) => {
+  await page.goto('demo/')
+  await page.evaluate(() => {
+    const raw = localStorage.getItem('rosta.demo.state.v1')
+    const s = raw ? JSON.parse(raw) : null
+    s.training.push({ employeeId: 'e12', taskId: 'manager-sign-off', completedAt: '2026-11-09T07:02:00.000Z', confirmedBy: 'manager' })
+    localStorage.setItem('rosta.demo.state.v1', JSON.stringify(s))
+  })
+  await page.reload()
+  await expect(page.getByText('Manager sign-off was removed for Aoife Kelly')).toBeVisible()
+})
+
+test("Home counts the demo clock's week, not the week browsed in My shifts", async ({ page }) => {
+  await openDemoAs(page, { mode: 'employee', employeeId: 'e07' }, 'home')
+  await expect(page.getByText('You have 5 shifts coming up this week.')).toBeVisible()
+  await nav(page, 'My shifts')
+  await expect(page.locator('[data-testid^="my-s-"]')).toHaveCount(5)
+  await page.getByRole('button', { name: 'Next week' }).click()
+  await expect(page.locator('[data-testid^="my-s-"]')).toHaveCount(2)
+  await nav(page, 'Home')
+  await expect(page.getByText('You have 5 shifts coming up this week.')).toBeVisible()
+  await expect(page.getByTestId('next-shift')).toContainText('Monday, 9 November')
+
+  // Browsing backwards and switching persona keep Home on the current week too.
+  await nav(page, 'My shifts')
+  await page.getByRole('button', { name: 'Previous week' }).click()
+  await page.getByRole('button', { name: 'Previous week' }).click()
+  await switchTo(page, 'Priya')
+  await nav(page, 'Home')
+  await expect(page.getByText('You have 4 shifts coming up this week.')).toBeVisible()
+  await expect(page.getByTestId('next-shift')).toContainText('Monday, 9 November')
+})
+
+test('Home shows a clear empty state when nothing is upcoming', async ({ page }) => {
+  await openDemoAs(page, { mode: 'employee', employeeId: 'e13' }, 'home')
+  await expect(page.getByTestId('no-upcoming')).toContainText('No upcoming shifts')
+  await expect(page.getByText('No more shifts for you this week.')).toBeVisible()
+})
+
+async function startScenario(page: Page, id: string) {
+  await page.getByRole('button', { name: 'Things to try' }).filter({ visible: true }).first().click()
+  await page.getByTestId(`scenario-${id}`).getByRole('button', { name: /^Start as/ }).click()
+}
+
+test('scenario Start opens the sample week and the right record after browsing elsewhere', async ({ page }) => {
+  await openDemoAs(page, { mode: 'manager' }, 'rota')
+  await page.getByRole('button', { name: 'Next week' }).click()
+  await expect(page.getByText('16 Nov to 22 Nov 2026')).toBeVisible()
+
+  // B: employee scenario, cover request for the Thursday till shift opens directly.
+  await startScenario(page, 'B')
+  const sheet = page.getByRole('dialog', { name: 'Request cover' })
+  await expect(sheet).toContainText('Thursday, 12 November')
+  await expect(sheet.getByTestId('ineligible-e12')).toContainText('Till training not completed')
+  await sheet.getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByText('9 Nov to 15 Nov 2026')).toBeVisible()
+  await expect(page.getByTestId('my-s-1205')).toBeVisible()
+
+  // A: browse away as Ciara first, then start as Priya.
+  await page.getByRole('button', { name: 'Next week' }).click()
+  await startScenario(page, 'A')
+  await expect(page.getByRole('dialog', { name: 'Request cover' })).toContainText('Wednesday, 11 November')
+  await page.getByRole('dialog', { name: 'Request cover' }).getByRole('button', { name: 'Cancel' }).click()
+  await expect(page.getByTestId('my-s-1102')).toBeVisible()
+
+  // D: manager scenario, Aoife's record opens in Team.
+  await page.getByRole('button', { name: 'Next week' }).click()
+  await startScenario(page, 'D')
+  await expect(page.getByRole('heading', { name: 'Team and induction' })).toBeVisible()
+  await expect(page.getByTestId('team-e12').getByTestId('task-till-training')).toBeVisible()
+  await nav(page, 'Rota')
+  await expect(page.getByText('9 Nov to 15 Nov 2026')).toBeVisible()
+})
+
+test('scenario explains changed conditions and keeps demo changes', async ({ page }) => {
+  await openDemoAs(page, { mode: 'manager' }, 'team')
+  await page.getByTestId('team-e12').getByTestId('task-till-training').getByRole('button', { name: /Confirm as manager/ }).click()
+  await page.getByRole('button', { name: 'Things to try' }).filter({ visible: true }).first().click()
+  await expect(page.getByTestId('scenario-B-changed')).toContainText("Aoife's till training has already been confirmed")
+  await expect(page.getByTestId('scenario-D-changed')).toBeVisible()
+  await expect(page.getByTestId('scenario-A-changed')).toHaveCount(0)
+  await page.getByTestId('scenario-B').getByRole('button', { name: 'Reset sample data' }).click()
+  await expect(page.getByRole('dialog', { name: 'Reset sample data?' })).toBeVisible()
+  await page.getByRole('dialog', { name: 'Reset sample data?' }).getByRole('button', { name: 'Keep my changes' }).click()
+  await expect(page.getByTestId('team-e12').getByTestId('task-till-training')).toContainText('Confirmed by manager')
+})

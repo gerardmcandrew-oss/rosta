@@ -1,5 +1,5 @@
 import type { Employee, Shift } from '../models/types'
-import { dateTimeKey, minutesOfDay, timesOverlap, weekdayIndex } from '../utils/date'
+import { addDays, dateTimeKey, minutesOfDay, startOfWeek, timesOverlap, weekdayIndex } from '../utils/date'
 
 export function shiftsOverlap(a: Pick<Shift, 'date' | 'start' | 'end'>, b: Pick<Shift, 'date' | 'start' | 'end'>): boolean {
   return a.date === b.date && timesOverlap(a.start, a.end, b.start, b.end)
@@ -34,4 +34,24 @@ export function isValidShiftTime(shift: Pick<Shift, 'start' | 'end'>): boolean {
   } catch {
     return false
   }
+}
+
+/** Monday of the week containing the demo clock, whatever week is being browsed. */
+export function currentWeekStart(now: string): string {
+  return startOfWeek(now.slice(0, 10))
+}
+
+export interface UpcomingSummary {
+  /** The employee's next shift that has not started, in any week. */
+  next: Shift | undefined
+  /** How many of their shifts that have not started fall in the current week. */
+  thisWeek: number
+}
+
+/** What the employee home screen shows. Both figures use the demo clock and the same meaning of upcoming. */
+export function upcomingSummary(employeeId: string, shifts: Shift[], now: string): UpcomingSummary {
+  const upcoming = sortShifts(shifts.filter((s) => s.employeeId === employeeId && !hasStarted(s, now)))
+  const weekStart = currentWeekStart(now)
+  const weekEnd = addDays(weekStart, 6)
+  return { next: upcoming[0], thisWeek: upcoming.filter((s) => s.date >= weekStart && s.date <= weekEnd).length }
 }

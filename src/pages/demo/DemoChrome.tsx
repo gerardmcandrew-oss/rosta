@@ -2,6 +2,7 @@ import { AlertTriangle, Check, CheckCircle2, RotateCcw, ShieldAlert, UserCog, X 
 import { useState } from 'react'
 import { ROLE_LABELS } from '../../data/catalogue'
 import type { Persona } from '../../models/types'
+import { SCENARIOS, type Scenario } from '../../demo/scenarios'
 import { Avatar, Button, Sheet } from '../../components/ui'
 import { ReasonList } from '../../demo/components/common'
 import { MANAGER_ID, useDemo } from '../../demo/store'
@@ -64,85 +65,60 @@ export function PersonaSheet({ open, onClose }: { open: boolean; onClose: () => 
   )
 }
 
-const SCENARIOS: { id: string; title: string; persona: Persona; personaLabel: string; steps: string[] }[] = [
-  {
-    id: 'A',
-    title: 'Successful replacement',
-    persona: { mode: 'employee', employeeId: 'e05' },
-    personaLabel: 'Start as Priya',
-    steps: [
-      'As Priya, open My shifts and choose Request cover on Wednesday 11 November.',
-      'Pick Seán Ó Briain and send the request.',
-      'Switch to Seán, open Requests and accept.',
-      'Switch to Manager and approve. Wednesday on the rota now shows Seán.',
-    ],
-  },
-  {
-    id: 'B',
-    title: 'Missing training',
-    persona: { mode: 'employee', employeeId: 'e07' },
-    personaLabel: 'Start as Ciara',
-    steps: [
-      'As Ciara, choose Request cover on the Thursday till shift (11:00 to 17:00).',
-      'Aoife Kelly, a new starter, is listed under Cannot cover because till training is not complete.',
-    ],
-  },
-  {
-    id: 'C',
-    title: 'Scheduling conflict',
-    persona: { mode: 'employee', employeeId: 'e07' },
-    personaLabel: 'Start as Ciara',
-    steps: [
-      'Open the same Thursday till request as Ciara.',
-      'Grace Okafor is blocked because she already works 07:30 to 12:00 that day. Seán and Priya are blocked for the same reason.',
-    ],
-  },
-  {
-    id: 'D',
-    title: 'Training changes eligibility',
-    persona: { mode: 'manager' },
-    personaLabel: 'Start as Manager',
-    steps: [
-      'As Manager, open Team, expand Aoife Kelly and choose Confirm as manager on Till training.',
-      'Switch to Ciara and request cover on Thursday again. Aoife now appears under Can cover.',
-    ],
-  },
-]
-
-export function GuideSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const { setPersona } = useDemo()
+export function GuideSheet({
+  open,
+  onClose,
+  onStart,
+  onReset,
+}: {
+  open: boolean
+  onClose: () => void
+  onStart: (scenario: Scenario) => void
+  onReset: () => void
+}) {
+  const { state, now } = useDemo()
   return (
     <Sheet
       open={open}
       onClose={onClose}
       title="Things to try"
-      description="Four scenarios. The outcomes come from the eligibility rules running on the sample records."
+      description="Four scenarios. The outcomes come from the eligibility rules running on the sample records. Start switches persona and opens the sample week."
     >
       <ol className="space-y-3">
-        {SCENARIOS.map((s) => (
-          <li key={s.id} className="rounded-2xl border border-line p-4">
-            <div className="flex items-center gap-2">
-              <span className="grid size-7 place-items-center rounded-lg bg-navy text-xs font-bold text-lime">{s.id}</span>
-              <h3 className="font-semibold">{s.title}</h3>
-            </div>
-            <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted marker:text-slate">
-              {s.steps.map((step) => (
-                <li key={step}>{step}</li>
-              ))}
-            </ol>
-            <Button
-              size="sm"
-              variant="secondary"
-              className="mt-3"
-              onClick={() => {
-                setPersona(s.persona)
-                onClose()
-              }}
-            >
-              {s.personaLabel}
-            </Button>
-          </li>
-        ))}
+        {SCENARIOS.map((s) => {
+          const changed = s.changed(state, now)
+          return (
+            <li key={s.id} className="rounded-2xl border border-line p-4" data-testid={`scenario-${s.id}`}>
+              <div className="flex items-center gap-2">
+                <span className="grid size-7 place-items-center rounded-lg bg-navy text-xs font-bold text-lime">{s.id}</span>
+                <h3 className="font-semibold">{s.title}</h3>
+              </div>
+              <ol className="mt-2 list-decimal space-y-1 pl-5 text-sm text-muted marker:text-slate">
+                {s.steps.map((step) => (
+                  <li key={step}>{step}</li>
+                ))}
+              </ol>
+              {changed && (
+                <div className="mt-3 flex items-start gap-2 rounded-xl bg-warn-bg p-3 text-sm text-warn" data-testid={`scenario-${s.id}-changed`}>
+                  <AlertTriangle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+                  <p>
+                    {changed} Your demo changes are kept. To run this scenario as written, reset the sample data first.
+                  </p>
+                </div>
+              )}
+              <div className="mt-3 flex flex-wrap gap-2">
+                <Button size="sm" variant="secondary" onClick={() => onStart(s)}>
+                  {s.personaLabel}
+                </Button>
+                {changed && (
+                  <Button size="sm" variant="ghost" onClick={onReset}>
+                    <RotateCcw className="size-4" aria-hidden="true" /> Reset sample data
+                  </Button>
+                )}
+              </div>
+            </li>
+          )
+        })}
       </ol>
       <p className="mt-4 text-xs text-muted">Tip: use Reset sample data to run a scenario again from the start.</p>
     </Sheet>
@@ -212,13 +188,19 @@ export function Toasts() {
 }
 
 export function RecoveredNotice() {
-  const { recovered } = useDemo()
+  const { state, recovered, revokedSignOffs } = useDemo()
   const [hidden, setHidden] = useState(false)
-  if (!recovered || hidden) return null
+  if ((!recovered && revokedSignOffs.length === 0) || hidden) return null
+  const names = revokedSignOffs.map((id) => state.employees.find((e) => e.id === id)?.name ?? id)
+  const who = names.length > 1 ? `${names.slice(0, -1).join(', ')} and ${names.at(-1)}` : names[0]
   return (
     <div role="alert" className="mb-5 flex items-start gap-3 rounded-2xl bg-warn-bg p-4 text-sm text-warn">
       <AlertTriangle className="mt-0.5 size-5 shrink-0" aria-hidden="true" />
-      <p className="flex-1">Saved demo data in this browser could not be read, so the original sample data has been loaded.</p>
+      <p className="flex-1">
+        {recovered
+          ? 'Saved demo data in this browser could not be read, so the original sample data has been loaded.'
+          : `Manager sign-off was removed for ${who} because some induction tasks are not complete. A fresh sign-off is needed once they are.`}
+      </p>
       <button type="button" onClick={() => setHidden(true)} className="font-semibold underline">
         OK
       </button>

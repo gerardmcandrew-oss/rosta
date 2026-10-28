@@ -31,6 +31,8 @@ interface DemoContextValue {
   actor: Employee
   now: string
   recovered: boolean
+  /** Employees whose saved sign-off was withdrawn on load because tasks are outstanding. */
+  revokedSignOffs: string[]
   toasts: Toast[]
   dismissToast: (id: number) => void
   setPersona: (p: Persona) => void
@@ -68,7 +70,7 @@ function nextTimestamp(state: DemoState): string {
 }
 
 export function DemoProvider({ children }: { children: ReactNode }) {
-  const [{ state: initial, recovered }] = useState(() => loadState())
+  const [{ state: initial, recovered, revokedSignOffs }] = useState(() => loadState())
   const [state, setState] = useState<DemoState>(initial)
   const [persona, setPersonaState] = useState<Persona>(() => loadPersona(initial.employees.map((e) => e.id)))
   const [toasts, setToasts] = useState<Toast[]>([])
@@ -121,6 +123,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       actor,
       now: DEMO_NOW,
       recovered,
+      revokedSignOffs,
       toasts,
       dismissToast,
       setPersona,
@@ -143,7 +146,7 @@ export function DemoProvider({ children }: { children: ReactNode }) {
       undo: (employeeId, taskId) => run((s) => undoTask(s, employeeId, taskId, actorRole === 'manager' ? 'manager' : 'employee')),
       assign: (shiftId, employeeId) => run((s) => assignShift(s, shiftId, employeeId, DEMO_NOW)),
     }),
-    [state, persona, actor, recovered, toasts, dismissToast, setPersona, run, pushToast, actorRole],
+    [state, persona, actor, recovered, revokedSignOffs, toasts, dismissToast, setPersona, run, pushToast, actorRole],
   )
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>

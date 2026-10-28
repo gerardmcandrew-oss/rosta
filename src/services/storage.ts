@@ -1,5 +1,6 @@
 import { createSampleState } from '../data/sampleData'
 import type { DemoState, Persona } from '../models/types'
+import { reconcileSignOffs } from '../rules/training'
 
 export const STATE_KEY = 'rosta.demo.state.v1'
 export const PERSONA_KEY = 'rosta.demo.persona.v1'
@@ -44,24 +45,31 @@ export interface LoadResult {
   state: DemoState
   /** True when stored data existed but could not be read and was replaced. */
   recovered: boolean
+  /** Employees whose saved manager sign-off was withdrawn because induction tasks are outstanding. */
+  revokedSignOffs: string[]
 }
 
 export function loadState(store: KeyValueStore | null = browserStore()): LoadResult {
-  if (!store) return { state: createSampleState(), recovered: false }
+  const sample = (recovered = false): LoadResult => ({ state: createSampleState(), recovered, revokedSignOffs: [] })
+  if (!store) return sample()
   let raw: string | null = null
   try {
     raw = store.getItem(STATE_KEY)
   } catch {
-    return { state: createSampleState(), recovered: false }
+    return sample()
   }
-  if (raw === null) return { state: createSampleState(), recovered: false }
+  if (raw === null) return sample()
   try {
     const parsed: unknown = JSON.parse(raw)
-    if (isDemoState(parsed)) return { state: parsed, recovered: false }
+    if (isDemoState(parsed)) {
+      // Data saved before the sign-off rule existed may hold a sign-off with tasks still outstanding.
+      const { training, revoked } = reconcileSignOffs(parsed.training)
+      return { state: revoked.length > 0 ? { ...parsed, training } : parsed, recovered: false, revokedSignOffs: revoked }
+    }
   } catch {
     // fall through to recovery
   }
-  return { state: createSampleState(), recovered: true }
+  return sample(true)
 }
 
 export function saveState(state: DemoState, store: KeyValueStore | null = browserStore()): boolean {

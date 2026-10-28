@@ -3,7 +3,7 @@ import type { DemoState, TaskId } from '../models/types'
 import { evaluateCandidate, isOpenRequest } from './eligibility'
 import type { Result } from './requests'
 import { hasStarted } from './scheduling'
-import { hasCompletedTask } from './training'
+import { describeSignOffBlocker, hasCompletedTask, SIGN_OFF_TASK, signOffPrerequisitesMissing } from './training'
 
 /** Marks an induction task complete. Manager-confirmed tasks need manager mode. */
 export function completeTask(state: DemoState, employeeId: string, taskId: TaskId, actor: 'employee' | 'manager', at: string): Result {
@@ -13,6 +13,10 @@ export function completeTask(state: DemoState, employeeId: string, taskId: TaskI
     return { ok: false, error: `${task.title} has to be confirmed by a manager.` }
   }
   if (hasCompletedTask(employeeId, taskId, state.training)) return { ok: false, error: 'Already completed.' }
+  if (taskId === SIGN_OFF_TASK) {
+    const missing = signOffPrerequisitesMissing(employeeId, state.training)
+    if (missing.length > 0) return { ok: false, error: `Manager sign-off is not available yet. ${describeSignOffBlocker(missing)}` }
+  }
   return {
     ok: true,
     state: { ...state, training: [...state.training, { employeeId, taskId, completedAt: at, confirmedBy: actor }] },
@@ -20,15 +24,22 @@ export function completeTask(state: DemoState, employeeId: string, taskId: TaskI
   }
 }
 
-/** Manager reverses a task, e.g. if it was confirmed by mistake. */
+/**
+ * Manager reverses a task, e.g. if it was confirmed by mistake. Undoing any
+ * other task also withdraws the final sign-off, which then has to be given again.
+ */
 export function undoTask(state: DemoState, employeeId: string, taskId: TaskId, actor: 'employee' | 'manager'): Result {
   const record = state.training.find((r) => r.employeeId === employeeId && r.taskId === taskId)
   if (!record) return { ok: false, error: 'Not completed yet.' }
   if (actor !== 'manager' && record.confirmedBy === 'manager') return { ok: false, error: 'Only a manager can undo this.' }
+  const signOff = state.training.find((r) => r.employeeId === employeeId && r.taskId === SIGN_OFF_TASK)
+  const withdrawSignOff = taskId !== SIGN_OFF_TASK && signOff !== undefined
   return {
     ok: true,
-    state: { ...state, training: state.training.filter((r) => r !== record) },
-    message: `${taskById(taskId).title} marked as not done.`,
+    state: { ...state, training: state.training.filter((r) => r !== record && !(withdrawSignOff && r === signOff)) },
+    message: withdrawSignOff
+      ? `${taskById(taskId).title} marked as not done. Manager sign-off removed: a fresh sign-off is needed once every task is complete.`
+      : `${taskById(taskId).title} marked as not done.`,
   }
 }
 

@@ -60,3 +60,30 @@ export function describeSkillGap(check: SkillCheck): string {
   }
   return `No ${label.toLowerCase()} experience recorded by a manager`
 }
+
+export const SIGN_OFF_TASK: TaskId = 'manager-sign-off'
+
+/**
+ * The final manager sign-off confirms the whole induction, so every other
+ * task has to be complete first. Shift eligibility does not depend on it.
+ */
+export function signOffPrerequisitesMissing(employeeId: string, training: TrainingRecord[]): TaskId[] {
+  const done = completedTaskIds(employeeId, training)
+  return ONBOARDING_TASKS.map((t) => t.id).filter((id) => id !== SIGN_OFF_TASK && !done.has(id))
+}
+
+export function describeSignOffBlocker(missing: TaskId[]): string {
+  return `Complete ${missing.map((id) => taskById(id).title.toLowerCase()).join(', ')} first.`
+}
+
+/**
+ * Removes sign-offs whose prerequisites are no longer all complete, for
+ * example in data saved before the rule existed. Returns who was affected.
+ */
+export function reconcileSignOffs(training: TrainingRecord[]): { training: TrainingRecord[]; revoked: string[] } {
+  const revoked = training
+    .filter((r) => r.taskId === SIGN_OFF_TASK && signOffPrerequisitesMissing(r.employeeId, training).length > 0)
+    .map((r) => r.employeeId)
+  if (revoked.length === 0) return { training, revoked }
+  return { training: training.filter((r) => !(r.taskId === SIGN_OFF_TASK && revoked.includes(r.employeeId))), revoked }
+}

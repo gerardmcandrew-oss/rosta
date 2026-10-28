@@ -11,7 +11,7 @@ The project has two parts, both static and served from GitHub Pages:
 | `/` | Landing page: problem, customer, solution, requirements, competitors, pricing assumptions, behind the build, early-access form |
 | `/demo/` | Working demo: manager and employee modes running on a fictional café, Harbour Lane Café, Dublin |
 
-Everything in the demo is **fictional business and sample data**. Prices are **illustrative assumptions**. No testimonials, customer numbers or test results are claimed.
+Everything in the demo is **fictional business and sample data**. Prices are **illustrative assumptions**. No testimonials or customer numbers are claimed. The landing page's Testing evidence covers AI-assisted desktop testing and the builder's own iPhone testing only; neither is independent user testing.
 
 ## Quick start
 
@@ -31,7 +31,7 @@ npm run build        # type-check and production build into dist/
 - **Persona switcher**: Manager (Niamh) or any of 12 fictional employees. This is a demonstration feature, not a login.
 - **Shift replacement workflow**: an employee picks a shift, sees who can cover (and why others cannot), sends a request; the colleague accepts or declines; the manager approves or rejects; the rota updates.
 - **Eligibility rules** checked on request, on acceptance and again on approval: active status, core induction, required skills, availability, overlapping shifts, overlapping pending commitments, not the original assignee, shift not already reassigned or started.
-- **Induction**: six tasks per person. Employees complete self-service tasks; till training and manager sign-off need manager mode.
+- **Induction**: six tasks per person. Employees complete self-service tasks; till training and manager sign-off need manager mode. The final sign-off is only available once every other task is complete, and undoing a task withdraws it.
 - **Weekly rota**: grid on desktop, day cards on phones, week navigation, "Return to sample week", manager assignment of open shifts using the same rules.
 - **Dashboard metrics** calculated from the records: staff, upcoming shifts, pending requests, coverage, induction progress, people needing training.
 - **Persistence** in `localStorage` under versioned keys, with safe recovery from malformed data and a confirmed "Reset sample data" button.
@@ -40,7 +40,7 @@ Planned or not included: staff administration, shift creation, notifications, tw
 
 ## Demo scenarios
 
-Open "Things to try" in the demo for guided steps.
+Open "Things to try" in the demo for guided steps. Each Start button switches persona, returns to the sample week and opens the shift or staff record the scenario uses.
 
 | Scenario | How to see it |
 | --- | --- |

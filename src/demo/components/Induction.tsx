@@ -1,7 +1,15 @@
 import { Check, CheckCircle2, Lock, ShieldCheck, Undo2, XCircle } from 'lucide-react'
 import { ONBOARDING_TASKS, SKILLS, taskById } from '../../data/catalogue'
 import type { Employee, SkillId } from '../../models/types'
-import { checkSkill, completedTaskIds, describeSkillGap, missingCoreTasks } from '../../rules/training'
+import {
+  checkSkill,
+  completedTaskIds,
+  describeSignOffBlocker,
+  describeSkillGap,
+  missingCoreTasks,
+  SIGN_OFF_TASK,
+  signOffPrerequisitesMissing,
+} from '../../rules/training'
 import { formatTimestamp } from '../../utils/date'
 import { Button } from '../../components/ui'
 import { useDemo } from '../store'
@@ -14,6 +22,7 @@ export function InductionChecklist({ employee }: { employee: Employee }) {
   const { state, persona, complete, undo } = useDemo()
   const done = completedTaskIds(employee.id, state.training)
   const isManager = persona.mode === 'manager'
+  const signOffMissing = signOffPrerequisitesMissing(employee.id, state.training)
 
   return (
     <ol className="space-y-2">
@@ -21,6 +30,8 @@ export function InductionChecklist({ employee }: { employee: Employee }) {
         const record = state.training.find((r) => r.employeeId === employee.id && r.taskId === task.id)
         const isDone = done.has(task.id)
         const canComplete = !isDone && (task.completedBy === 'employee' || isManager)
+        // The final sign-off waits until every other task is complete.
+        const blockedBy = task.id === SIGN_OFF_TASK && !isDone && signOffMissing.length > 0 ? describeSignOffBlocker(signOffMissing) : null
         return (
           <li
             key={task.id}
@@ -50,9 +61,21 @@ export function InductionChecklist({ employee }: { employee: Employee }) {
                   About {task.estimatedMinutes} min · {task.completedBy === 'manager' ? 'Manager confirms' : 'Self-service'}
                 </p>
               )}
+              {blockedBy && (
+                <p id={`${employee.id}-sign-off-blocker`} className="mt-1.5 flex items-start gap-1.5 text-xs font-medium text-warn">
+                  <Lock className="mt-px size-3.5 shrink-0" aria-hidden="true" />
+                  {blockedBy}
+                </p>
+              )}
               <div className="mt-2.5 flex flex-wrap gap-2">
                 {canComplete && (
-                  <Button size="sm" variant={task.completedBy === 'manager' ? 'primary' : 'secondary'} onClick={() => complete(employee.id, task.id)}>
+                  <Button
+                    size="sm"
+                    variant={task.completedBy === 'manager' ? 'primary' : 'secondary'}
+                    disabled={blockedBy !== null}
+                    aria-describedby={blockedBy ? `${employee.id}-sign-off-blocker` : undefined}
+                    onClick={() => complete(employee.id, task.id)}
+                  >
                     <Check className="size-4" aria-hidden="true" />
                     {task.completedBy === 'manager' ? 'Confirm as manager' : 'Mark as done'}
                     <span className="sr-only">: {task.title}</span>

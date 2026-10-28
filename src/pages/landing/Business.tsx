@@ -1,7 +1,7 @@
 import { ArrowRight, ArrowUpRight, Check, ClipboardList, ExternalLink, FlaskConical, Lightbulb, MessagesSquare, Sheet as SheetIcon, Target, UserRound, Users } from 'lucide-react'
 import { useId, useState, type FormEvent } from 'react'
 import { Logo } from '../../components/Logo'
-import { COMPETITORS, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_SESSIONS } from '../../data/siteContent'
+import { COMPETITORS, FIXES_VERIFIED_ON, LIMITATIONS, PHOTO_CREDITS, SOURCES_CHECKED, TEST_CHANGES, TEST_SESSIONS, type TestSession } from '../../data/siteContent'
 import { asset, DEMO_URL } from '../../utils/assets'
 import { StatusBadge } from './Product'
 import { SectionIntro } from './Story'
@@ -139,15 +139,32 @@ export function Pricing() {
   )
 }
 
-const TEST_FIELDS: { key: keyof (typeof TEST_SESSIONS)[number]; label: string }[] = [
+const TEST_FIELDS: { key: Exclude<keyof TestSession, 'title'>; label: string }[] = [
   { key: 'testerType', label: 'Tester type' },
   { key: 'device', label: 'Device and browser' },
   { key: 'tasks', label: 'Tasks attempted' },
   { key: 'worked', label: 'What worked' },
   { key: 'problems', label: 'What broke or caused confusion' },
-  { key: 'changes', label: 'Changes made' },
   { key: 'date', label: 'Test date' },
 ]
+
+const CHANGE_FIELDS = [
+  { key: 'original', label: 'Original result' },
+  { key: 'change', label: 'Change made' },
+  { key: 'verified', label: `Checked ${FIXES_VERIFIED_ON}` },
+  { key: 'pending', label: 'Still to check' },
+] as const
+
+function FieldValue({ value }: { value: string | string[] }) {
+  if (typeof value === 'string') return <>{value}</>
+  return (
+    <ul className="list-disc space-y-1 pl-5 marker:text-slate">
+      {value.map((v) => (
+        <li key={v}>{v}</li>
+      ))}
+    </ul>
+  )
+}
 
 export function BehindTheBuild() {
   const notes = [
@@ -223,36 +240,50 @@ export function BehindTheBuild() {
 
         <div id="testing" className="mt-16">
           <h3 className="flex items-center gap-2 text-xl font-bold tracking-tight">
-            <FlaskConical className="size-5" aria-hidden="true" /> External testing evidence
+            <FlaskConical className="size-5" aria-hidden="true" /> Testing evidence
           </h3>
-          {TEST_SESSIONS.length === 0 ? (
-            <div className="mt-4 rounded-2xl border-2 border-dashed border-paper-300 p-6">
-              <p className="text-lg font-bold" data-testid="testing-status">
-                External user testing pending.
-              </p>
-              <p className="mt-1 text-muted">No one outside the build has tested Rosta yet. Findings will be recorded here exactly as observed, under these headings:</p>
-              <ul className="mt-4 flex flex-wrap gap-2">
-                {TEST_FIELDS.map((f) => (
-                  <li key={f.key} className="rounded-full bg-paper-200 px-3 py-1 text-sm font-medium">
-                    {f.label}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : (
-            <div className="mt-4 space-y-4">
-              {TEST_SESSIONS.map((s, i) => (
-                <dl key={i} className="card grid gap-x-6 gap-y-3 p-6 sm:grid-cols-[12rem_1fr]">
+          <p className="mt-2 max-w-3xl text-muted" data-testid="testing-status">
+            Two sources so far: AI-assisted testing in a desktop browser, and Gerard's own testing on an iPhone. Neither is independent user testing,
+            and no customers have tested Rosta.
+          </p>
+          <div className="mt-4 space-y-4">
+            {TEST_SESSIONS.map((s, i) => (
+              <article key={s.title} className="card p-6" data-testid={`test-session-${i + 1}`}>
+                <h4 className="font-bold">
+                  {i + 1}. {s.title}
+                </h4>
+                <dl className="mt-4 grid gap-x-6 gap-y-3 sm:grid-cols-[12rem_1fr]">
                   {TEST_FIELDS.map((f) => (
                     <div key={f.key} className="contents">
                       <dt className="text-sm font-semibold text-muted">{f.label}</dt>
-                      <dd>{s[f.key]}</dd>
+                      <dd>
+                        <FieldValue value={s[f.key]} />
+                      </dd>
                     </div>
                   ))}
                 </dl>
-              ))}
-            </div>
-          )}
+              </article>
+            ))}
+            <article className="card p-6" data-testid="test-changes">
+              <h4 className="font-bold">Changes made</h4>
+              <p className="mt-1 text-sm text-muted">Fixes for the three issues both sources found.</p>
+              <div className="mt-4 divide-y divide-line">
+                {TEST_CHANGES.map((c) => (
+                  <section key={c.issue} aria-label={c.issue} className="py-4 first:pt-0 last:pb-0">
+                    <h5 className="font-semibold">{c.issue}</h5>
+                    <dl className="mt-3 grid gap-x-6 gap-y-3 sm:grid-cols-[12rem_1fr]">
+                      {CHANGE_FIELDS.map((f) => (
+                        <div key={f.key} className="contents">
+                          <dt className="text-sm font-semibold text-muted">{f.label}</dt>
+                          <dd>{c[f.key]}</dd>
+                        </div>
+                      ))}
+                    </dl>
+                  </section>
+                ))}
+              </div>
+            </article>
+          </div>
         </div>
       </div>
     </section>

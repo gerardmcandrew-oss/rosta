@@ -86,20 +86,109 @@ export const COMPETITORS = [
 ]
 
 /**
- * External user testing. Leave `sessions` empty until a real session has
- * happened, then record exactly what the tester did and said.
+ * Testing evidence for Behind the build. Record only what actually
+ * happened. Builder and AI-assisted testing are not independent user
+ * testing, so never label them that way.
  */
 export interface TestSession {
+  title: string
   testerType: string
   device: string
-  tasks: string
-  worked: string
-  problems: string
-  changes: string
+  tasks: string | string[]
+  worked: string | string[]
+  problems: string | string[]
   date: string
 }
 
-export const TEST_SESSIONS: TestSession[] = []
+export const TEST_SESSIONS: TestSession[] = [
+  {
+    title: 'AI-assisted desktop testing',
+    testerType: 'AI-assisted testing. An AI tool worked through the demo in a cloud browser.',
+    device: 'Desktop computer, Google Chrome in a cloud browser. This was not a real-phone test.',
+    tasks: 'The replacement workflow, training and overlap restrictions, assigning an open shift, till training, and the dashboard and rota layout.',
+    worked: [
+      'Priya requested Wednesday cover from Seán. Seán accepted and the manager approved.',
+      "Wednesday's rota then showed Seán in place of Priya.",
+      'A second open cover request for the same shift was not available.',
+      'Missing till training blocked Aoife from Thursday till cover.',
+      'Overlapping shifts blocked Grace, Seán and Priya.',
+      "Assigning Saturday's open floor shift to Mateus worked.",
+      "Confirming and undoing till training updated Aoife's till readiness.",
+      'No obvious overlap or misaligned columns on the dashboard or rota.',
+    ],
+    problems: 'All three issues listed under Changes made below.',
+    date: 'Date not recorded',
+  },
+  {
+    title: 'Builder testing on iPhone 16',
+    testerType: 'Builder testing by Gerard, who built Rosta. Not independent or external user testing.',
+    device: 'iPhone 16, in Safari and in Google Chrome.',
+    tasks: [
+      'Loading and portrait layout',
+      'Navigation and one-handed use',
+      'Landscape layout',
+      'Sending a cover request',
+      'Duplicate-request prevention',
+      'Colleague acceptance and manager approval',
+      'Manager rejection',
+      'Missing-training restrictions',
+      'Overlapping-shift restrictions',
+      'Training changing eligibility',
+      'Premature final sign-off',
+      "Home's week consistency",
+      'Guided scenario week selection',
+      'Forms and the on-screen keyboard',
+      'Persistence after refresh',
+      'Restoring sample data',
+    ],
+    worked: 'Results for each scenario were not written up here. Screenshots were taken during testing.',
+    problems: 'The same three issues as the desktop testing, in both Safari and Chrome.',
+    date: 'Date not recorded',
+  },
+]
+
+/** What changed after testing, kept separate from what has been checked and what still needs checking. */
+export interface TestChange {
+  issue: string
+  original: string
+  change: string
+  verified: string
+  pending: string
+}
+
+export const FIXES_VERIFIED_ON = '28 October 2026'
+
+const IPHONE_RETEST = 'Retest on an iPhone in Safari and Chrome. The iPhone tests above were done before this fix.'
+
+export const TEST_CHANGES: TestChange[] = [
+  {
+    issue: 'Final induction sign-off',
+    original: 'Manager sign-off was accepted while till training was incomplete, and stayed in place after till training was undone.',
+    change:
+      'Sign-off now needs every other induction task to be complete. Until then the button is disabled and says what is missing, and the same rule is checked when the change is saved. Undoing a task removes the sign-off and asks for a fresh one. Saved sign-offs with tasks outstanding are removed with a notice. Shift eligibility still depends only on the training each shift needs.',
+    verified:
+      'Automated tests: early sign-off is blocked, it becomes available once every task is done, undoing a task removes it, and redoing the task needs a new sign-off. Floor and till eligibility are unchanged.',
+    pending: IPHONE_RETEST,
+  },
+  {
+    issue: 'Home mixing different weeks',
+    original: 'After browsing to 16 to 22 November in My shifts, Home said "2 shifts coming up this week" but showed Monday 9 November as the next shift.',
+    change:
+      "Home now takes the current week from the fixed demo clock, Monday 9 November 2026 at 07:00, not from the week being browsed. The count and the next-shift card use the same meaning of upcoming. When nothing is coming up, Home says so.",
+    verified:
+      "Automated tests: Ciara's Home shows 5 shifts and Monday 9 November after browsing forwards and backwards, switching to Priya shows her 4, and the empty state appears for someone with no shifts.",
+    pending: IPHONE_RETEST,
+  },
+  {
+    issue: 'Guided scenarios keeping the wrong week',
+    original: 'Starting "Missing training" after browsing to 16 to 22 November left My shifts on that week, so the Thursday 12 November shift was not shown.',
+    change:
+      "Each Start button now switches persona, returns to the sample week and opens the scenario's screen: the cover request for the employee scenarios, and Aoife's record in Team for the manager one. Demo changes are kept. If a scenario's starting conditions have changed, it says so and offers Reset sample data.",
+    verified:
+      'Automated tests: scenarios A, B and D started after browsing another week open the right week and record. Scenario C opens the same shift as B. The changed-conditions message was also checked.',
+    pending: IPHONE_RETEST,
+  },
+]
 
 export const PHOTO_CREDITS = [
   {

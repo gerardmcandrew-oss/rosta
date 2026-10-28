@@ -41,7 +41,7 @@ The first run found a real defect: at 320 px the request filter tabs overflowed 
 
 ## External user testing
 
-The assignment needs testing by at least one person who did not build Rosta. **No external testing has happened yet.** The landing page says "External user testing pending." until real findings are added.
+The assignment needs testing by at least one person who did not build Rosta. **No independent testing has happened yet.** The landing page's "Testing evidence" section records the testing so far: AI-assisted testing in a cloud desktop Chrome browser, and builder testing by Gerard on an iPhone 16 (Safari and Chrome). Both found three issues, fixed and checked with automated tests on 28 October 2026. Retesting those fixes on the iPhone is still pending.
 
 ### Test script
 
@@ -86,15 +86,15 @@ Add each real session to `TEST_SESSIONS` in `src/data/siteContent.ts`:
 ```ts
 export const TEST_SESSIONS: TestSession[] = [
   {
+    title: '...',
     testerType: '...',
     device: '...',
-    tasks: '...',
+    tasks: '...',      // or a list: ['...', '...']
     worked: '...',
     problems: '...',
-    changes: '...',
-    date: '...',
+    date: '...',       // 'Date not recorded' if unknown
   },
 ]
 ```
 
-Once that array has entries, the "External testing evidence" section on the landing page shows them in place of the pending notice. Record only what actually happened.
+Each entry appears as a card in the "Testing evidence" section on the landing page. Fixes go in `TEST_CHANGES`, keeping the original result, the change, what was checked and what is still pending separate. Record only what actually happened, and never label builder or AI-assisted testing as independent.
